@@ -155,7 +155,7 @@ function DefaultAboutSupportContent() {
             </p>
             <div className='mx-auto mt-auto grid aspect-square w-full max-w-44 place-items-center overflow-hidden rounded-2xl'>
               <img
-                src='https://moxai.ai/about/TGQrcode.png'
+                src='/images/about/TGQrcode.png'
                 alt={t('Telegram QR code')}
                 className='size-full rounded-xl object-cover'
               />

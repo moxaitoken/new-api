@@ -91,8 +91,8 @@ function normalizeChatwootLocale(language?: string | null): string {
   if (!language) return 'en'
   const normalized = language.trim().replaceAll('_', '-').toLowerCase()
 
-  if (['zh', 'zh-cn', 'zh-hans'].includes(normalized)) return 'zh_CN'
-  if (['zh-tw', 'zh-hk', 'zh-hant'].includes(normalized)) return 'zh_TW'
+  if (['zh', 'zhcn', 'zh-cn', 'zh-hans'].includes(normalized)) return 'zh_CN'
+  if (['zhtw', 'zh-tw', 'zh-hk', 'zh-hant'].includes(normalized)) return 'zh_TW'
 
   if (['en', 'fr', 'ru', 'ja', 'vi'].includes(normalized)) {
     return normalized
