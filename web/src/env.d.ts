@@ -18,6 +18,38 @@ For commercial licensing, please contact support@quantumnous.com
 */
 /// <reference types="@rsbuild/core/types" />
 
+interface ImportMetaEnv {
+  readonly VITE_CHATWOOT_WEBSITE_TOKEN?: string
+  readonly VITE_CHATWOOT_BASE_URL?: string
+}
+
+interface ImportMeta {
+  readonly env: ImportMetaEnv
+}
+
+interface Window {
+  chatwootSettings?: {
+    position: 'left' | 'right'
+    type: 'standard' | 'expanded_bubble'
+    launcherTitle: string
+    locale?: string
+    useBrowserLanguage?: boolean
+  }
+  chatwootSDK?: {
+    run: (config: { websiteToken: string; baseUrl: string }) => void
+  }
+  __chatwootInitialized?: boolean
+  $chatwoot?: {
+    setUser: (
+      identifier: string,
+      user: { name: string; email?: string }
+    ) => void
+    setCustomAttributes: (attributes: Record<string, unknown>) => void
+    setLocale: (locale: string) => void
+    reset: () => void
+  }
+}
+
 declare module '@visactor/react-vchart' {
   export const VChart: React.ComponentType<Record<string, unknown>>
 }

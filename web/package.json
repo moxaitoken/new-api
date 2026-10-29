@@ -21,6 +21,7 @@
     "copyright:check": "node scripts/add-copyright.mjs --check",
     "copyright": "node scripts/add-copyright.mjs",
     "i18n:sync": "node scripts/sync-i18n.mjs",
+    "seo:check": "node scripts/check-seo.mjs",
     "knip": "knip"
   },
   "dependencies": {

@@ -65,7 +65,7 @@ export function UserAuthForm({
   redirectTo,
   ...props
 }: AuthFormProps) {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const [isLoading, setIsLoading] = useState(false)
   const [wechatCode, setWeChatCode] = useState('')
   const [agreedToLegal, setAgreedToLegal] = useState(false)
@@ -144,6 +144,12 @@ export function UserAuthForm({
       password: '',
     },
   })
+
+  useEffect(() => {
+    if (Object.keys(form.formState.errors).length > 0) {
+      void form.trigger()
+    }
+  }, [form, i18n.language])
 
   const wechatQrCodeUrl = useMemo(() => {
     return (

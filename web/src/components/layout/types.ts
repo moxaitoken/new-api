@@ -93,6 +93,7 @@ export type SidebarData = {
 export type TopNavLink = {
   title: string
   href: string
+  items?: TopNavLink[]
   isActive?: boolean
   disabled?: boolean
   requiresAuth?: boolean

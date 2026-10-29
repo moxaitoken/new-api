@@ -17,6 +17,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@quantumnous.com
 */
 import { Link, useNavigate, useRouterState } from '@tanstack/react-router'
+import { ChevronDown } from 'lucide-react'
 import { useCallback, useEffect, useState, type ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -59,6 +60,8 @@ export interface PublicHeaderProps {
   showNavigation?: boolean
   showAuthButtons?: boolean
   showNotifications?: boolean
+  logoContainerClassName?: string
+  hideSiteName?: boolean
   className?: string
 }
 
@@ -72,6 +75,8 @@ export function PublicHeader(props: PublicHeaderProps) {
     homeUrl = '/',
     showAuthButtons = true,
     showNotifications = true,
+    logoContainerClassName,
+    hideSiteName = false,
   } = props
 
   const { t } = useTranslation()
@@ -202,8 +207,10 @@ export function PublicHeader(props: PublicHeaderProps) {
       <header className='pointer-events-none fixed inset-x-0 top-0 z-50'>
         <div
           className={cn(
-            'pointer-events-auto mx-auto transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]',
-            scrolled ? 'max-w-[52rem] px-3 pt-3' : 'max-w-7xl px-4 pt-0 md:px-6'
+            'pointer-events-auto mx-auto transition-[padding,transform,opacity] duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]',
+            scrolled
+              ? 'w-max max-w-[calc(100vw-1.5rem)] px-3 pt-3'
+              : 'w-full max-w-7xl px-4 pt-0 md:px-6'
           )}
         >
           <nav
@@ -220,19 +227,26 @@ export function PublicHeader(props: PublicHeaderProps) {
                 to={homeUrl}
                 className='group flex min-w-0 items-center gap-2.5'
               >
-                <div className='flex size-7 shrink-0 items-center justify-center transition-all duration-300 group-hover:scale-105'>
+                <div
+                  className={cn(
+                    'flex size-7 shrink-0 items-center justify-center transition-all duration-300 group-hover:scale-105',
+                    logoContainerClassName
+                  )}
+                >
                   {logoContent}
                 </div>
-                <span
-                  className='max-w-48 truncate text-sm font-semibold tracking-tight'
-                  title={displaySiteName}
-                >
-                  {loading ? (
-                    <Skeleton className='h-4 w-16' />
-                  ) : (
-                    displaySiteName
-                  )}
-                </span>
+                {!hideSiteName && (
+                  <span
+                    className='max-w-48 truncate text-sm font-semibold tracking-tight'
+                    title={displaySiteName}
+                  >
+                    {loading ? (
+                      <Skeleton className='h-4 w-16' />
+                    ) : (
+                      displaySiteName
+                    )}
+                  </span>
+                )}
               </Link>
               <SystemUpdateAction presentation='version' />
             </div>
@@ -241,6 +255,76 @@ export function PublicHeader(props: PublicHeaderProps) {
             <div className='hidden min-w-0 items-center gap-0.5 lg:flex'>
               {links.map((link) => {
                 const isActive = pathname === link.href
+                if (link.items?.length) {
+                  return (
+                    <div
+                      key={`${link.title}:${link.href}`}
+                      className='group/nav-item relative'
+                    >
+                      <button
+                        type='button'
+                        aria-haspopup='menu'
+                        className={cn(
+                          'text-muted-foreground hover:text-foreground flex items-center gap-1 rounded-lg px-3 py-1.5 text-sm font-medium whitespace-nowrap transition-colors duration-200',
+                          link.disabled && 'pointer-events-none opacity-50'
+                        )}
+                      >
+                        {t(link.title)}
+                        <ChevronDown
+                          className='size-3 transition-transform duration-200 group-focus-within/nav-item:rotate-180 group-hover/nav-item:rotate-180'
+                          aria-hidden='true'
+                        />
+                      </button>
+                      <div
+                        role='menu'
+                        className='bg-background/95 invisible absolute top-[calc(100%+0.5rem)] left-1/2 z-50 w-56 -translate-x-1/2 translate-y-1 rounded-lg border p-1.5 opacity-0 shadow-lg backdrop-blur-xl transition-all duration-200 group-focus-within/nav-item:visible group-focus-within/nav-item:translate-y-0 group-focus-within/nav-item:opacity-100 group-hover/nav-item:visible group-hover/nav-item:translate-y-0 group-hover/nav-item:opacity-100'
+                      >
+                        <div className='absolute inset-x-0 bottom-full h-2' />
+                        {link.items.map((item) => {
+                          const itemClassName = cn(
+                            'text-muted-foreground hover:bg-muted hover:text-foreground flex rounded-md px-3 py-2 text-sm whitespace-nowrap transition-colors',
+                            item.disabled && 'pointer-events-none opacity-50'
+                          )
+
+                          if (item.external) {
+                            return (
+                              <a
+                                key={item.href}
+                                href={item.href}
+                                target='_blank'
+                                rel='noopener noreferrer'
+                                role='menuitem'
+                                aria-disabled={item.disabled}
+                                tabIndex={item.disabled ? -1 : undefined}
+                                onClick={(event) =>
+                                  handleNavLinkClick(event, item)
+                                }
+                                className={itemClassName}
+                              >
+                                {t(item.title)}
+                              </a>
+                            )
+                          }
+
+                          return (
+                            <Link
+                              key={item.href}
+                              to={item.href}
+                              role='menuitem'
+                              disabled={item.disabled}
+                              onClick={(event) =>
+                                handleNavLinkClick(event, item)
+                              }
+                              className={itemClassName}
+                            >
+                              {t(item.title)}
+                            </Link>
+                          )
+                        })}
+                      </div>
+                    </div>
+                  )
+                }
                 if (link.external) {
                   return (
                     <a
@@ -373,6 +457,66 @@ export function PublicHeader(props: PublicHeaderProps) {
               )
               const transitionStyle = {
                 transitionDelay: mobileOpen ? `${100 + i * 50}ms` : '0ms',
+              }
+              if (link.items?.length) {
+                return (
+                  <div
+                    key={`${link.title}:${link.href}`}
+                    className={cn(
+                      'transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]',
+                      mobileOpen
+                        ? 'translate-y-0 opacity-100'
+                        : 'translate-y-4 opacity-0'
+                    )}
+                    style={transitionStyle}
+                  >
+                    <div className='text-muted-foreground flex items-center gap-2 py-3 text-base font-medium tracking-tight'>
+                      {t(link.title)}
+                      <ChevronDown className='size-4' aria-hidden='true' />
+                    </div>
+                    <div className='border-border/60 ml-3 flex flex-col gap-1 border-l pl-4'>
+                      {link.items.map((item) => {
+                        const childClassName = cn(
+                          'text-muted-foreground py-2 text-sm font-medium transition-colors hover:text-foreground',
+                          item.disabled && 'pointer-events-none opacity-50'
+                        )
+
+                        if (item.external) {
+                          return (
+                            <a
+                              key={item.href}
+                              href={item.href}
+                              target='_blank'
+                              rel='noopener noreferrer'
+                              aria-disabled={item.disabled}
+                              tabIndex={item.disabled ? -1 : undefined}
+                              onClick={(event) =>
+                                handleNavLinkClick(event, item, true)
+                              }
+                              className={childClassName}
+                            >
+                              {t(item.title)}
+                            </a>
+                          )
+                        }
+
+                        return (
+                          <Link
+                            key={item.href}
+                            to={item.href}
+                            disabled={item.disabled}
+                            onClick={(event) =>
+                              handleNavLinkClick(event, item, true)
+                            }
+                            className={childClassName}
+                          >
+                            {t(item.title)}
+                          </Link>
+                        )
+                      })}
+                    </div>
+                  </div>
+                )
               }
               if (link.external) {
                 return (

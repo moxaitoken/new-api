@@ -55,7 +55,10 @@ const headerNavSchema = z.object({
   pricingRequireAuth: z.boolean(),
   rankingsEnabled: z.boolean(),
   rankingsRequireAuth: z.boolean(),
+  userCases: z.boolean(),
+  blog: z.boolean(),
   docs: z.boolean(),
+  partners: z.boolean(),
   about: z.boolean(),
 })
 
@@ -89,8 +92,18 @@ const toFormValues = (config: HeaderNavModulesConfig): HeaderNavFormValues => ({
     config.rankings?.requireAuth === undefined
       ? HEADER_NAV_DEFAULT.rankings.requireAuth
       : Boolean(config.rankings.requireAuth),
+  userCases:
+    config.userCases === undefined
+      ? HEADER_NAV_DEFAULT.userCases
+      : Boolean(config.userCases),
+  blog:
+    config.blog === undefined ? HEADER_NAV_DEFAULT.blog : Boolean(config.blog),
   docs:
     config.docs === undefined ? HEADER_NAV_DEFAULT.docs : Boolean(config.docs),
+  partners:
+    config.partners === undefined
+      ? HEADER_NAV_DEFAULT.partners
+      : Boolean(config.partners),
   about:
     config.about === undefined
       ? HEADER_NAV_DEFAULT.about
@@ -119,7 +132,10 @@ export function HeaderNavigationSection({
       ...config,
       home: values.home,
       console: values.console,
+      userCases: values.userCases,
+      blog: values.blog,
       docs: values.docs,
+      partners: values.partners,
       about: values.about,
       pricing: {
         ...(config.pricing ?? HEADER_NAV_DEFAULT.pricing),
@@ -164,9 +180,24 @@ export function HeaderNavigationSection({
       description: t('User dashboard and quota controls.'),
     },
     {
+      key: 'userCases',
+      title: t('User cases'),
+      description: t('Show user case menu in the top navigation.'),
+    },
+    {
+      key: 'blog',
+      title: t('Blog'),
+      description: t('Show blog entry in the top navigation.'),
+    },
+    {
       key: 'docs',
       title: t('Docs'),
       description: t('Documentation or external knowledge base.'),
+    },
+    {
+      key: 'partners',
+      title: t('Partners'),
+      description: t('Show partners entry in the top navigation.'),
     },
     {
       key: 'about',

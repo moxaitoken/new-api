@@ -30,6 +30,8 @@ type PublicLayoutProps = {
   showNotifications?: boolean
   logo?: React.ReactNode
   siteName?: string
+  logoContainerClassName?: string
+  hideSiteName?: boolean
 }
 
 export function PublicLayout(props: PublicLayoutProps) {
@@ -43,6 +45,8 @@ export function PublicLayout(props: PublicLayoutProps) {
         showNotifications={props.showNotifications}
         logo={props.logo}
         siteName={props.siteName}
+        logoContainerClassName={props.logoContainerClassName}
+        hideSiteName={props.hideSiteName}
         {...props.headerProps}
       />
 

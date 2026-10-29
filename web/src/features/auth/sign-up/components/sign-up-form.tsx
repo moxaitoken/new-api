@@ -41,7 +41,10 @@ import { Label } from '@/components/ui/label'
 import { register, wechatLoginByCode } from '@/features/auth/api'
 import { LegalConsent } from '@/features/auth/components/legal-consent'
 import { OAuthProviders } from '@/features/auth/components/oauth-providers'
-import { registerFormSchema } from '@/features/auth/constants'
+import {
+  registerFormSchema,
+  USERNAME_MAX_LENGTH,
+} from '@/features/auth/constants'
 import { useAuthRedirect } from '@/features/auth/hooks/use-auth-redirect'
 import { useEmailVerification } from '@/features/auth/hooks/use-email-verification'
 import { useTurnstile } from '@/features/auth/hooks/use-turnstile'
@@ -59,7 +62,7 @@ export function SignUpForm({
   className,
   ...props
 }: React.HTMLAttributes<HTMLFormElement>) {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const [isLoading, setIsLoading] = useState(false)
   const [verificationCode, setVerificationCode] = useState('')
   const [agreedToLegal, setAgreedToLegal] = useState(false)
@@ -90,6 +93,8 @@ export function SignUpForm({
 
   const form = useForm<z.infer<typeof registerFormSchema>>({
     resolver: zodResolver(registerFormSchema),
+    mode: 'onBlur',
+    reValidateMode: 'onChange',
     defaultValues: {
       username: '',
       email: '',
@@ -98,7 +103,15 @@ export function SignUpForm({
     },
   })
 
+  useEffect(() => {
+    if (Object.keys(form.formState.errors).length > 0) {
+      void form.trigger()
+    }
+  }, [form, i18n.language])
+
   const emailValue = form.watch('email')
+  const passwordValue = form.watch('password')
+  const confirmPasswordValue = form.watch('confirmPassword')
   const emailVerificationRequired = !!status?.email_verification
   const hasUserAgreement = Boolean(status?.user_agreement_enabled)
   const hasPrivacyPolicy = Boolean(status?.privacy_policy_enabled)
@@ -138,6 +151,12 @@ export function SignUpForm({
       saveAffiliateCode(aff)
     }
   }, [])
+
+  useEffect(() => {
+    if (confirmPasswordValue) {
+      void form.trigger('confirmPassword')
+    }
+  }, [confirmPasswordValue, form, passwordValue])
 
   async function onSubmit(data: z.infer<typeof registerFormSchema>) {
     if (requiresLegalConsent && !agreedToLegal) {
@@ -259,7 +278,11 @@ export function SignUpForm({
             <FormItem>
               <FormLabel>{t('Username')}</FormLabel>
               <FormControl>
-                <Input placeholder={t('Enter your username')} {...field} />
+                <Input
+                  placeholder={t('Enter your username')}
+                  maxLength={USERNAME_MAX_LENGTH}
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>

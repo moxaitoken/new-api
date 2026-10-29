@@ -17,13 +17,14 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@quantumnous.com
 */
 import { Link } from '@tanstack/react-router'
-import { Menu } from 'lucide-react'
+import { ChevronDown, Menu } from 'lucide-react'
 import { useMemo } from 'react'
 
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
@@ -102,27 +103,96 @@ export function TopNav({ className, links, ...props }: TopNavProps) {
         )}
         {...props}
       >
-        {normalizedLinks.map(({ title, href, isActive, disabled, external }) =>
-          external ? (
-            <a
-              key={`${title}-${href}`}
-              href={href}
-              target='_blank'
-              rel='noopener noreferrer'
-              className={`hover:text-primary text-sm font-medium transition-colors ${isActive ? '' : 'text-muted-foreground'}`}
-            >
-              {title}
-            </a>
-          ) : (
-            <Link
-              key={`${title}-${href}`}
-              to={href}
-              disabled={disabled}
-              className={`hover:text-primary text-sm font-medium transition-colors ${isActive ? '' : 'text-muted-foreground'}`}
-            >
-              {title}
-            </Link>
-          )
+        {normalizedLinks.map(
+          ({ title, href, items, isActive, disabled, external }) => {
+            if (items?.length) {
+              return (
+                <DropdownMenu key={`${title}-${href}`} modal={false}>
+                  <DropdownMenuTrigger
+                    render={
+                      <button
+                        type='button'
+                        className={cn(
+                          'hover:text-primary flex items-center gap-1 text-sm font-medium whitespace-nowrap transition-colors',
+                          isActive ? '' : 'text-muted-foreground',
+                          disabled && 'pointer-events-none opacity-50'
+                        )}
+                        disabled={disabled}
+                      />
+                    }
+                  >
+                    {title}
+                    <ChevronDown className='size-3' aria-hidden='true' />
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent
+                    side='bottom'
+                    align='start'
+                    className='min-w-40'
+                  >
+                    <DropdownMenuGroup>
+                      {items.map((item) => (
+                        <DropdownMenuItem
+                          key={`${item.title}-${item.href}`}
+                          disabled={item.disabled}
+                          render={
+                            item.external ? (
+                              <a
+                                href={item.href}
+                                target='_blank'
+                                rel='noopener noreferrer'
+                                className='whitespace-nowrap'
+                              >
+                                {item.title}
+                              </a>
+                            ) : (
+                              <Link
+                                to={item.href}
+                                disabled={item.disabled}
+                                className='whitespace-nowrap'
+                              >
+                                {item.title}
+                              </Link>
+                            )
+                          }
+                        />
+                      ))}
+                    </DropdownMenuGroup>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              )
+            }
+            if (external) {
+              return (
+                <a
+                  key={`${title}-${href}`}
+                  href={href}
+                  target='_blank'
+                  rel='noopener noreferrer'
+                  className={cn(
+                    'hover:text-primary text-sm font-medium whitespace-nowrap transition-colors',
+                    isActive ? '' : 'text-muted-foreground',
+                    disabled && 'pointer-events-none opacity-50'
+                  )}
+                >
+                  {title}
+                </a>
+              )
+            }
+            return (
+              <Link
+                key={`${title}-${href}`}
+                to={href}
+                disabled={disabled}
+                className={cn(
+                  'hover:text-primary text-sm font-medium whitespace-nowrap transition-colors',
+                  isActive ? '' : 'text-muted-foreground',
+                  disabled && 'pointer-events-none opacity-50'
+                )}
+              >
+                {title}
+              </Link>
+            )
+          }
         )}
       </nav>
     </>

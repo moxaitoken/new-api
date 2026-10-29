@@ -56,6 +56,7 @@ import { Route as AuthenticatedUsageLogsAuditRouteImport } from './routes/_authe
 import { Route as AuthenticatedUsersIndexRouteImport } from './routes/_authenticated/users/index'
 import { Route as AuthenticatedWalletIndexRouteImport } from './routes/_authenticated/wallet/index'
 import { Route as PricingModelIdIndexRouteImport } from './routes/pricing/$modelId/index'
+import { Route as SolutionsSlugIndexRouteImport } from './routes/solutions/$slug/index'
 import { Route as AuthenticatedSystemSettingsAuthIndexRouteImport } from './routes/_authenticated/system-settings/auth/index'
 import { Route as AuthenticatedSystemSettingsAuthSectionRouteImport } from './routes/_authenticated/system-settings/auth/$section'
 import { Route as AuthenticatedSystemSettingsBillingIndexRouteImport } from './routes/_authenticated/system-settings/billing/index'
@@ -325,6 +326,11 @@ const PricingModelIdIndexRoute = PricingModelIdIndexRouteImport.update({
   path: '/pricing/$modelId/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SolutionsSlugIndexRoute = SolutionsSlugIndexRouteImport.update({
+  id: '/solutions/$slug/',
+  path: '/solutions/$slug/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedSystemSettingsAuthIndexRoute =
   AuthenticatedSystemSettingsAuthIndexRouteImport.update({
     id: '/auth/',
@@ -468,6 +474,7 @@ export interface FileRoutesByFullPath {
   '/users/': typeof AuthenticatedUsersIndexRoute
   '/wallet/': typeof AuthenticatedWalletIndexRoute
   '/pricing/$modelId/': typeof PricingModelIdIndexRoute
+  '/solutions/$slug/': typeof SolutionsSlugIndexRoute
   '/system-settings/auth/$section': typeof AuthenticatedSystemSettingsAuthSectionRoute
   '/system-settings/billing/$section': typeof AuthenticatedSystemSettingsBillingSectionRoute
   '/system-settings/content/$section': typeof AuthenticatedSystemSettingsContentSectionRoute
@@ -530,6 +537,7 @@ export interface FileRoutesByTo {
   '/users': typeof AuthenticatedUsersIndexRoute
   '/wallet': typeof AuthenticatedWalletIndexRoute
   '/pricing/$modelId': typeof PricingModelIdIndexRoute
+  '/solutions/$slug': typeof SolutionsSlugIndexRoute
   '/system-settings/auth/$section': typeof AuthenticatedSystemSettingsAuthSectionRoute
   '/system-settings/billing/$section': typeof AuthenticatedSystemSettingsBillingSectionRoute
   '/system-settings/content/$section': typeof AuthenticatedSystemSettingsContentSectionRoute
@@ -596,6 +604,7 @@ export interface FileRoutesById {
   '/_authenticated/users/': typeof AuthenticatedUsersIndexRoute
   '/_authenticated/wallet/': typeof AuthenticatedWalletIndexRoute
   '/pricing/$modelId/': typeof PricingModelIdIndexRoute
+  '/solutions/$slug/': typeof SolutionsSlugIndexRoute
   '/_authenticated/system-settings/auth/$section': typeof AuthenticatedSystemSettingsAuthSectionRoute
   '/_authenticated/system-settings/billing/$section': typeof AuthenticatedSystemSettingsBillingSectionRoute
   '/_authenticated/system-settings/content/$section': typeof AuthenticatedSystemSettingsContentSectionRoute
@@ -661,6 +670,7 @@ export interface FileRouteTypes {
     | '/users/'
     | '/wallet/'
     | '/pricing/$modelId/'
+    | '/solutions/$slug/'
     | '/system-settings/auth/$section'
     | '/system-settings/billing/$section'
     | '/system-settings/content/$section'
@@ -723,6 +733,7 @@ export interface FileRouteTypes {
     | '/users'
     | '/wallet'
     | '/pricing/$modelId'
+    | '/solutions/$slug'
     | '/system-settings/auth/$section'
     | '/system-settings/billing/$section'
     | '/system-settings/content/$section'
@@ -788,6 +799,7 @@ export interface FileRouteTypes {
     | '/_authenticated/users/'
     | '/_authenticated/wallet/'
     | '/pricing/$modelId/'
+    | '/solutions/$slug/'
     | '/_authenticated/system-settings/auth/$section'
     | '/_authenticated/system-settings/billing/$section'
     | '/_authenticated/system-settings/content/$section'
@@ -823,6 +835,7 @@ export interface RootRouteChildren {
   RankingsIndexRoute: typeof RankingsIndexRoute
   SetupIndexRoute: typeof SetupIndexRoute
   PricingModelIdIndexRoute: typeof PricingModelIdIndexRoute
+  SolutionsSlugIndexRoute: typeof SolutionsSlugIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -1156,6 +1169,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PricingModelIdIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/solutions/$slug/': {
+      id: '/solutions/$slug/'
+      path: '/solutions/$slug'
+      fullPath: '/solutions/$slug/'
+      preLoaderRoute: typeof SolutionsSlugIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/system-settings/auth/': {
       id: '/_authenticated/system-settings/auth/'
       path: '/auth'
@@ -1432,6 +1452,7 @@ const rootRouteChildren: RootRouteChildren = {
   RankingsIndexRoute: RankingsIndexRoute,
   SetupIndexRoute: SetupIndexRoute,
   PricingModelIdIndexRoute: PricingModelIdIndexRoute,
+  SolutionsSlugIndexRoute: SolutionsSlugIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

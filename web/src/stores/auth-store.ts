@@ -55,6 +55,10 @@ export interface AuthUser {
   stripe_customer?: string
   sidebar_modules?: string
   permissions?: UserPermissions
+  mox_total_recharge?: number
+  mox_monthly_spend?: number
+  mox_registered_at?: number
+  mox_last_login_at?: number
 }
 
 export interface LoginSession {

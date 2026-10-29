@@ -20,13 +20,12 @@ import { useCallback, useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { PublicLayout } from '@/components/layout'
-import { Footer } from '@/components/layout/components/footer'
 import { RichContent } from '@/components/rich-content'
 import { useTheme } from '@/context/theme-provider'
 import { isLikelyHtml } from '@/lib/content-format'
 import { useAuthStore } from '@/stores/auth-store'
 
-import { CTA, Features, Hero, HowItWorks, Stats } from './components'
+import { MoxAIHome } from './components/moxai-home'
 import { useHomePageContent } from './hooks'
 
 export function Home() {
@@ -121,13 +120,19 @@ export function Home() {
   }
 
   return (
-    <PublicLayout showMainContainer={false}>
-      <Hero isAuthenticated={isAuthenticated} />
-      <Stats />
-      <Features />
-      <HowItWorks />
-      <CTA isAuthenticated={isAuthenticated} />
-      <Footer />
+    <PublicLayout
+      showMainContainer={false}
+      logo={
+        <img
+          src='/moxai-logo.png'
+          alt='MoxAI'
+          className='h-8 w-auto max-w-[136px] object-contain'
+        />
+      }
+      logoContainerClassName='h-10 w-[136px] overflow-hidden sm:w-[150px]'
+      hideSiteName
+    >
+      <MoxAIHome isAuthenticated={isAuthenticated} />
     </PublicLayout>
   )
 }

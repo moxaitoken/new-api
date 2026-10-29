@@ -19,17 +19,11 @@ For commercial licensing, please contact support@quantumnous.com
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import type { TopNavLink } from '@/components/layout/types'
+import { SOLUTION_LIST } from '@/features/solutions/data'
 import { useStatus } from '@/hooks/use-status'
 import { parseHeaderNavModulesFromStatus } from '@/lib/nav-modules'
 import { useAuthStore } from '@/stores/auth-store'
-
-export type TopNavLink = {
-  title: string
-  href: string
-  disabled?: boolean
-  requiresAuth?: boolean
-  external?: boolean
-}
 
 /**
  * Generate top navigation links based on HeaderNavModules configuration from backend /api/status
@@ -86,13 +80,43 @@ export function useTopNavLinks(): TopNavLink[] {
     links.push({ title: t('Rankings'), href: '/rankings', requiresAuth })
   }
 
+  // User cases
+  if (modules?.userCases !== false) {
+    links.push({
+      title: t('User cases'),
+      href: '#',
+      items: SOLUTION_LIST.map((solution) => ({
+        title: t(solution.navTitle),
+        href: `/solutions/${solution.slug}`,
+      })),
+    })
+  }
+
+  // Blog
+  if (modules?.blog !== false) {
+    links.push({
+      title: t('Blog'),
+      href: 'https://moxai.ai/blog/',
+      external: true,
+    })
+  }
+
   // Docs (supports external links)
   if (modules?.docs !== false) {
     if (docsLink) {
-      links.push({ title: t('Docs'), href: docsLink, external: true })
+      links.push({
+        title: t('API Documentation'),
+        href: docsLink,
+        external: true,
+      })
     } else {
-      links.push({ title: t('Docs'), href: '/docs' })
+      links.push({ title: t('API Documentation'), href: '/docs' })
     }
+  }
+
+  // Partners
+  if (modules?.partners !== false) {
+    links.push({ title: t('Partners'), href: '#' })
   }
 
   // About

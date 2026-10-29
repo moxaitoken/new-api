@@ -143,6 +143,16 @@ func GetTopUpByTradeNo(tradeNo string) *TopUp {
 	return topUp
 }
 
+func SumUserSuccessfulTopUpMoney(userId int) (float64, error) {
+	var total float64
+	// 只统计已成功的充值订单，避免未支付、失败或过期订单进入累计充值。
+	err := DB.Model(&TopUp{}).
+		Where("user_id = ? AND status = ?", userId, common.TopUpStatusSuccess).
+		Select("COALESCE(SUM(money), 0)").
+		Scan(&total).Error
+	return total, err
+}
+
 func UpdatePendingTopUpStatus(tradeNo string, expectedPaymentProvider string, targetStatus string) error {
 	if tradeNo == "" {
 		return errors.New("payment order number not provided")

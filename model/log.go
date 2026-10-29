@@ -748,6 +748,21 @@ func SumUsedQuota(logType int, startTimestamp int64, endTimestamp int64, modelNa
 	return stat, nil
 }
 
+func SumUserConsumeQuota(userId int, startTimestamp int64, endTimestamp int64) (int, error) {
+	var quota int
+	tx := LOG_DB.Model(&Log{}).
+		Where("user_id = ? AND type = ?", userId, LogTypeConsume)
+	if startTimestamp > 0 {
+		tx = tx.Where("created_at >= ?", startTimestamp)
+	}
+	if endTimestamp > 0 {
+		tx = tx.Where("created_at <= ?", endTimestamp)
+	}
+	// 本月消费按消费日志的内部额度累加，和 used_quota 的单位保持一致。
+	err := tx.Select("COALESCE(SUM(quota), 0)").Scan(&quota).Error
+	return quota, err
+}
+
 func SumUsedToken(logType int, startTimestamp int64, endTimestamp int64, modelName string, username string, tokenName string) (token int) {
 	tx := LOG_DB.Table("logs").Select("COALESCE(sum(prompt_tokens), 0) + COALESCE(sum(completion_tokens), 0)")
 	if username != "" {

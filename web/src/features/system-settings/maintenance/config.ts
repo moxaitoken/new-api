@@ -26,7 +26,10 @@ export type HeaderNavModulesConfig = {
   console: boolean
   pricing: HeaderNavAccessConfig
   rankings: HeaderNavAccessConfig
+  userCases: boolean
+  blog: boolean
   docs: boolean
+  partners: boolean
   about: boolean
   [key: string]: boolean | HeaderNavAccessConfig
 }
@@ -49,7 +52,10 @@ export const HEADER_NAV_DEFAULT: HeaderNavModulesConfig = {
     enabled: true,
     requireAuth: false,
   },
+  userCases: true,
+  blog: true,
   docs: true,
+  partners: true,
   about: true,
 }
 

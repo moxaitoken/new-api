@@ -8,6 +8,7 @@ import (
 	"strconv"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/QuantumNous/new-api/common"
 	"github.com/QuantumNous/new-api/i18n"
@@ -479,6 +480,25 @@ func GetSelf(c *gin.Context) {
 	permissions := calculateUserPermissions(userRole)
 	permissions["admin_permissions"] = authz.Capabilities(id, userRole)
 	responseData["permissions"] = permissions
+
+	totalRecharge, err := model.SumUserSuccessfulTopUpMoney(id)
+	if err != nil {
+		common.ApiError(c, err)
+		return
+	}
+	now := time.Now()
+	monthStart := time.Date(now.Year(), now.Month(), 1, 0, 0, 0, 0, now.Location()).Unix()
+	monthlySpend, err := model.SumUserConsumeQuota(id, monthStart, now.Unix())
+	if err != nil {
+		common.ApiError(c, err)
+		return
+	}
+	// MoxAI 个人概览字段：充值为成功订单实付金额，消费为本月内部额度消耗。
+	// 只在 GetSelf 返回，避免登录/刷新接口额外查询。
+	responseData["mox_total_recharge"] = totalRecharge
+	responseData["mox_monthly_spend"] = monthlySpend
+	responseData["mox_registered_at"] = user.CreatedAt
+	responseData["mox_last_login_at"] = user.LastLoginAt
 
 	c.JSON(http.StatusOK, gin.H{
 		"success": true,

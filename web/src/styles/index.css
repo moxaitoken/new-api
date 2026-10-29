@@ -138,6 +138,18 @@ For commercial licensing, please contact support@quantumnous.com
   }
 }
 
+/* Keep the Chatwoot launcher on the right while lifting it above bottom UI. */
+#woot-widget-bubble,
+#chatwoot-widget-bubble,
+.woot-widget-bubble {
+  bottom: 96px !important;
+}
+
+.woot-widget-holder,
+iframe[src*='chatwoot'] {
+  bottom: 180px !important;
+}
+
 /* Vercel Geist-style skeleton shimmer */
 .skeleton-shimmer {
   background: linear-gradient(
