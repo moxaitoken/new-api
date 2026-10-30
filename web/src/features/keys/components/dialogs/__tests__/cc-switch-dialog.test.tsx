@@ -26,12 +26,15 @@ import { CCSwitchDialog } from '../cc-switch-dialog'
 let queryClient: QueryClient
 
 beforeEach(() => {
+  localStorage.clear()
   queryClient = new QueryClient({
     defaultOptions: { queries: { retry: false, gcTime: Infinity } },
   })
 })
 
 afterEach(() => {
+  localStorage.clear()
+  vi.restoreAllMocks()
   queryClient.clear()
 })
 
@@ -125,3 +128,27 @@ describe('CC Switch model selection', () => {
     expect(screen.queryByRole('listbox')).not.toBeInTheDocument()
   })
 })
+
+it.each(['Claude', 'Codex', 'Gemini'])(
+  'exports %s using the independent API endpoint while preserving the website homepage',
+  async (app) => {
+    queryClient.setQueryData(['status'], {
+      api_address: 'https://api.example.com/',
+      server_address: 'https://console.example.com',
+    })
+    renderDialog()
+    const open = vi.spyOn(window, 'open').mockImplementation(() => null)
+    const user = userEvent.setup()
+    await user.click(screen.getByRole('radio', { name: app }))
+    await user.click(screen.getByRole('combobox', { name: 'Primary Model' }))
+    await user.click(await screen.findByRole('option', { name: 'gpt-5.4' }))
+    await user.click(screen.getByRole('button', { name: 'Open CC Switch' }))
+    const exported = new URL(String(open.mock.calls[0]?.[0]))
+    expect(exported.searchParams.get('endpoint')).toBe(
+      app === 'Codex' ? 'https://api.example.com/v1' : 'https://api.example.com'
+    )
+    expect(exported.searchParams.get('homepage')).toBe(
+      'https://console.example.com'
+    )
+  }
+)

@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"net/url"
 	"slices"
 	"sort"
 	"strconv"
@@ -210,6 +211,19 @@ func UpdateOption(c *gin.Context) {
 			common.ApiErrorT(c, "Compliance confirmation fields cannot be changed through the general settings API")
 			return
 		}
+	}
+	if option.Key == "general_setting.api_address" {
+		raw := option.Value.(string)
+		if raw != "" {
+			parsed, err := url.Parse(raw)
+			if err != nil || parsed == nil || (parsed.Scheme != "http" && parsed.Scheme != "https") ||
+				parsed.Hostname() == "" || parsed.User != nil || parsed.Opaque != "" ||
+				parsed.RawQuery != "" || parsed.ForceQuery || strings.ContainsAny(raw, "#\\") || strings.TrimSpace(raw) != raw {
+				common.ApiErrorT(c, "Enter an absolute HTTP(S) URL without credentials, query parameters, or fragments")
+				return
+			}
+		}
+		option.Value = strings.TrimRight(raw, "/")
 	}
 	if option.Key == "TaskPublicAddress" && option.Value.(string) != "" {
 		if err := service.ValidateTaskArtifactBaseURL(option.Value.(string)); err != nil {

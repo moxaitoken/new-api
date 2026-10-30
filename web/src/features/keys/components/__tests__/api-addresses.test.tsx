@@ -214,3 +214,23 @@ it('keeps long addresses readable within the scrollable panel and updates when c
   )
   expect(await navigator.clipboard.readText()).toBe('https://new.example.com')
 })
+
+it('uses the independent API address for the default address and responds to status changes', async () => {
+  const user = userEvent.setup()
+  renderAddresses({
+    server_address: 'https://console.example.com',
+    api_address: 'https://api.example.com/',
+  })
+  await user.click(screen.getByRole('button', { name: 'API Addresses' }))
+  const dialog = await screen.findByRole('dialog', { name: 'API Addresses' })
+  expect(within(dialog).getByText('https://api.example.com')).toBeVisible()
+  await act(async () => {
+    client.setQueryData(STATUS_QUERY_KEY, {
+      server_address: 'https://console.example.com',
+      api_address: 'https://next.example.com',
+    })
+  })
+  await waitFor(() =>
+    expect(within(dialog).getByText('https://next.example.com')).toBeVisible()
+  )
+})

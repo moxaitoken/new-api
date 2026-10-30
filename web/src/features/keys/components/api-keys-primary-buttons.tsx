@@ -38,6 +38,7 @@ import {
 } from '@/components/ui/popover'
 import { useApiInfo } from '@/features/dashboard/hooks/use-status-data'
 import { useStatus } from '@/hooks/use-status'
+import { resolveAPIAddress } from '@/lib/api-address'
 
 import { useApiKeys } from './api-keys-provider'
 
@@ -54,8 +55,11 @@ export function ApiKeysPrimaryButtons() {
     ? items
     : [
         {
-          url: serverAddress || window.location.origin,
-          route: serverAddress ? t('Default API address') : t('Current domain'),
+          url: resolveAPIAddress(status, window.location.origin),
+          route:
+            status?.api_address || serverAddress
+              ? t('Default API address')
+              : t('Current domain'),
           description: '',
         },
       ]

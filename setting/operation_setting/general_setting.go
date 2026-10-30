@@ -11,6 +11,7 @@ const (
 )
 
 type GeneralSetting struct {
+	APIAddress          string `json:"api_address"`
 	DocsLink            string `json:"docs_link"`
 	PingIntervalEnabled bool   `json:"ping_interval_enabled"`
 	PingIntervalSeconds int    `json:"ping_interval_seconds"`

@@ -32,6 +32,7 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
+import { isValidPublicBaseURL } from '@/lib/api-address'
 
 import { FormDirtyIndicator } from '../components/form-dirty-indicator'
 import { FormNavigationGuard } from '../components/form-navigation-guard'
@@ -55,6 +56,7 @@ const _systemInfoSchema = z.object({
   About: z.string().optional(),
   HomePageContent: z.string().optional(),
   general_setting: z.object({
+    api_address: z.string().refine(isValidPublicBaseURL).optional(),
     docs_link: z.string(),
   }),
   legal: z.object({
@@ -87,6 +89,7 @@ export function SystemInfoSection({ defaultValues }: SystemInfoSectionProps) {
     About: normalizeValue(defaultValues.About),
     HomePageContent: normalizeValue(defaultValues.HomePageContent),
     general_setting: {
+      api_address: normalizeValue(defaultValues.general_setting?.api_address),
       docs_link: normalizeValue(defaultValues.general_setting?.docs_link),
     },
     legal: {
@@ -111,6 +114,15 @@ export function SystemInfoSection({ defaultValues }: SystemInfoSectionProps) {
     About: z.string().optional(),
     HomePageContent: z.string().optional(),
     general_setting: z.object({
+      api_address: z
+        .string()
+        .refine(isValidPublicBaseURL, {
+          error: () =>
+            t(
+              'Enter an absolute HTTP(S) URL without credentials, query parameters, or fragments'
+            ),
+        })
+        .optional(),
       docs_link: z.string(),
     }),
     legal: z.object({
@@ -130,7 +142,11 @@ export function SystemInfoSection({ defaultValues }: SystemInfoSectionProps) {
       onSubmit: async (_data, changedFields) => {
         for (const [key, value] of Object.entries(changedFields)) {
           let v = normalizeValue(value)
-          if (key === 'ServerAddress' || key === 'TaskPublicAddress') {
+          if (
+            key === 'ServerAddress' ||
+            key === 'TaskPublicAddress' ||
+            key === 'general_setting.api_address'
+          ) {
             v = v.replace(/\/+$/, '')
           }
           await updateOption.mutateAsync({
@@ -185,6 +201,25 @@ export function SystemInfoSection({ defaultValues }: SystemInfoSectionProps) {
                     <FormDescription>
                       {t(
                         'The public URL of your server, used for OAuth callbacks, webhooks, and other external integrations'
+                      )}
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name='general_setting.api_address'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('API Base Address')}</FormLabel>
+                    <FormControl>
+                      <Input placeholder='https://api.example.com' {...field} />
+                    </FormControl>
+                    <FormDescription>
+                      {t(
+                        'Base URL for connection info and CC Switch exports. Do not append /v1. Leave blank to use Server Address.'
                       )}
                     </FormDescription>
                     <FormMessage />
