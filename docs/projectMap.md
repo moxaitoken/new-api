@@ -5,8 +5,14 @@
   `router/` owns HTTP routes, `controller/` request handling, `service/` business
   logic, `model/` GORM persistence, `relay/` provider forwarding.
 - Independent Go modules: `relaykit/` protocol conversion, `tokenkit/` token counting.
-- Integrations: SQLite/MySQL/PostgreSQL, optional separate log database, Redis;
+- Integrations: SQLite/MySQL/PostgreSQL primary database (all three supported);
+  optional separate log database (`LOG_SQL_DSN`) that also supports ClickHouse; Redis;
   provider credentials stay in the existing channel subsystem.
+- Auth: sessions, API and personal access tokens, JWT, WebAuthn/Passkeys, TOTP,
+  OAuth/OIDC (see `docs/authentication.md`); Casbin authorization in `service/authz/`.
+- Extensions: JavaScript task plugins in `plugins/tasks/` run on moejs through
+  `pkg/jsplugin/` and integrate with host task polling and settlement; `electron/` is
+  the desktop wrapper.
 - Console: `web/package.json`, React/TypeScript, Rsbuild, Bun, TanStack Router/Query,
   Zustand, Base UI and Tailwind; `web/src/features/` owns feature implementations.
 - Contracts: management routes under `/api`; model relay under `/v1`, `/v1beta`
